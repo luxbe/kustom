@@ -1,28 +1,48 @@
-
-
 <div align="center">
+  <h1><code>kustom</code></h1>
+  <p>
+    <a href="https://www.npmjs.com/package/kustom" target="_blank">
+      <img alt="Version" src="https://img.shields.io/npm/v/kustom.svg">
+    </a>
+  </p>
 
-  <h1><code>kustom-rs</code></h1>
+<strong>A tool to interact with <a href="https://kustom.rocks">kustom files</a> through <a href="https://webassembly.org/">wasm</a> using <a href="https://github.com/rustwasm/wasm-pack">wasm-pack</a></strong>
 
-  <strong>A tool to interact with <a href="https://kustom.rocks">klwp files</a> with wasm using <a href="https://github.com/rustwasm/wasm-pack">wasm-pack</a>.</strong>
+<sub>🦀 Built with Rust + WebAssembly 🦀</sub>
 
-  <sub>🦀 Built with Rust + WebAssembly 🦀</sub>
 </div>
 
 ## About
 
-This project is designed to make extracting and working with klwp files easy.
+This project is designed to easily extract and work with klwp files
 
-## 🚴 Usage
+## Install
+
+```sh
+npm install kustom
+```
+
+## 💻 Develop
 
 ### 🛠️ Build with `wasm-pack build`
 
 ```
-wasm-pack build
+wasm-pack build --target web
 ```
 
-### 🔬 Test in Headless Browsers with `wasm-pack test`
+### 🔬 Test with `cargo test`
 
 ```
-wasm-pack test --headless --firefox
+cargo test
 ```
+
+### 🎁 Publish to NPM with `wasm-pack publish`
+
+```
+wasm-pack publish
+```
+
+## 📝 License
+
+Copyright © 2021 [luxbe](https://github.com/luxbe)<br />
+This project is [MIT](https://github.com/luxbe/kustom/blob/master/LICENSE) licensed
