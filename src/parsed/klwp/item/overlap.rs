@@ -12,6 +12,7 @@ pub struct Overlap {
 
     pub id: String,
     pub title: Option<String>,
+    #[serde(rename(serialize = "isRoot"))]
     pub is_root: Option<bool>,
     pub anchor: anchor::Anchor,
     pub offset: offset::Offset,
@@ -63,6 +64,7 @@ const TS_APPEND_CONTENT: &'static str = r#"export interface Overlap {
     
     id: string,
     title: string,
+    isRoot: boolean,
     anchor: Anchor,
     offset: Offset,
     padding: Padding

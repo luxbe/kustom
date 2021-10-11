@@ -11,6 +11,7 @@ pub struct Text {
     pub paint: paint::Paint,
     pub id: String,
     pub title: Option<String>,
+    #[serde(rename(serialize = "isRoot"))]
     pub is_root: Option<bool>,
     pub anchor: anchor::Anchor,
     pub offset: offset::Offset,
@@ -138,6 +139,7 @@ export interface Text {
     paint: Paint,
     id: string,
     title: string,
+    isRoot: boolean,
     anchor: Anchor,
     offset: Offset,
     padding: Padding
