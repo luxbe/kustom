@@ -17,21 +17,9 @@ pub struct Anchor {
     v: AnchorType,
 }
 
-pub fn from_raw_item(item_raw: &klwp::item::Item, is_root: bool) -> Anchor {
+pub fn from_raw_item(item_raw: &klwp::item::Item) -> Option<Anchor> {
     match &item_raw.position_anchor {
-        None => {
-            if is_root {
-                Anchor {
-                    h: AnchorType::Center,
-                    v: AnchorType::Start,
-                }
-            } else {
-                Anchor {
-                    h: AnchorType::Center,
-                    v: AnchorType::Center,
-                }
-            }
-        }
+        None => None,
         Some(v) => {
             let h = match v {
                 klwp::item::PositionAnchor::TOP
@@ -56,7 +44,7 @@ pub fn from_raw_item(item_raw: &klwp::item::Item, is_root: bool) -> Anchor {
                 | klwp::item::PositionAnchor::BOTTOMLEFT
                 | klwp::item::PositionAnchor::BOTTOMRIGHT => AnchorType::End,
             };
-            Anchor { h, v }
+            Some(Anchor { h, v })
         }
     }
 }
@@ -81,9 +69,8 @@ mod tests {
     fn it_parses_none_correctly() {
         let shape_raw = klwp::item::tests::base_item(klwp::item::InternalType::ShapeModule);
 
-        let anchor = from_raw_item(&shape_raw, false);
-        assert!(matches!(anchor.h, AnchorType::Center));
-        assert!(matches!(anchor.v, AnchorType::Center));
+        let anchor_raw = from_raw_item(&shape_raw);
+        assert!(anchor_raw.is_none());
     }
 
     #[test]
@@ -91,57 +78,66 @@ mod tests {
         let mut shape_raw = klwp::item::tests::base_item(klwp::item::InternalType::ShapeModule);
 
         shape_raw.position_anchor = Some(klwp::item::PositionAnchor::TOP);
-        let anchor = from_raw_item(&shape_raw, false);
+        let anchor_raw = from_raw_item(&shape_raw);
+        assert!(anchor_raw.is_some());
+        let anchor = anchor_raw.unwrap();
         assert!(matches!(anchor.h, AnchorType::Center));
         assert!(matches!(anchor.v, AnchorType::Start));
 
         shape_raw.position_anchor = Some(klwp::item::PositionAnchor::TOPLEFT);
-        let anchor = from_raw_item(&shape_raw, false);
+        let anchor_raw = from_raw_item(&shape_raw);
+        assert!(anchor_raw.is_some());
+        let anchor = anchor_raw.unwrap();
         assert!(matches!(anchor.h, AnchorType::Start));
         assert!(matches!(anchor.v, AnchorType::Start));
 
         shape_raw.position_anchor = Some(klwp::item::PositionAnchor::TOPRIGHT);
-        let anchor = from_raw_item(&shape_raw, false);
+        let anchor_raw = from_raw_item(&shape_raw);
+        assert!(anchor_raw.is_some());
+        let anchor = anchor_raw.unwrap();
         assert!(matches!(anchor.h, AnchorType::End));
         assert!(matches!(anchor.v, AnchorType::Start));
 
         shape_raw.position_anchor = Some(klwp::item::PositionAnchor::CENTER);
-        let anchor = from_raw_item(&shape_raw, false);
+        let anchor_raw = from_raw_item(&shape_raw);
+        assert!(anchor_raw.is_some());
+        let anchor = anchor_raw.unwrap();
         assert!(matches!(anchor.h, AnchorType::Center));
         assert!(matches!(anchor.v, AnchorType::Center));
 
         shape_raw.position_anchor = Some(klwp::item::PositionAnchor::CENTERLEFT);
-        let anchor = from_raw_item(&shape_raw, false);
+        let anchor_raw = from_raw_item(&shape_raw);
+        assert!(anchor_raw.is_some());
+        let anchor = anchor_raw.unwrap();
         assert!(matches!(anchor.h, AnchorType::Start));
         assert!(matches!(anchor.v, AnchorType::Center));
 
         shape_raw.position_anchor = Some(klwp::item::PositionAnchor::CENTERRIGHT);
-        let anchor = from_raw_item(&shape_raw, false);
+        let anchor_raw = from_raw_item(&shape_raw);
+        assert!(anchor_raw.is_some());
+        let anchor = anchor_raw.unwrap();
         assert!(matches!(anchor.h, AnchorType::End));
         assert!(matches!(anchor.v, AnchorType::Center));
 
         shape_raw.position_anchor = Some(klwp::item::PositionAnchor::BOTTOM);
-        let anchor = from_raw_item(&shape_raw, false);
+        let anchor_raw = from_raw_item(&shape_raw);
+        assert!(anchor_raw.is_some());
+        let anchor = anchor_raw.unwrap();
         assert!(matches!(anchor.h, AnchorType::Center));
         assert!(matches!(anchor.v, AnchorType::End));
 
         shape_raw.position_anchor = Some(klwp::item::PositionAnchor::BOTTOMLEFT);
-        let anchor = from_raw_item(&shape_raw, false);
+        let anchor_raw = from_raw_item(&shape_raw);
+        assert!(anchor_raw.is_some());
+        let anchor = anchor_raw.unwrap();
         assert!(matches!(anchor.h, AnchorType::Start));
         assert!(matches!(anchor.v, AnchorType::End));
 
         shape_raw.position_anchor = Some(klwp::item::PositionAnchor::BOTTOMRIGHT);
-        let anchor = from_raw_item(&shape_raw, false);
+        let anchor_raw = from_raw_item(&shape_raw);
+        assert!(anchor_raw.is_some());
+        let anchor = anchor_raw.unwrap();
         assert!(matches!(anchor.h, AnchorType::End));
         assert!(matches!(anchor.v, AnchorType::End));
-    }
-
-    #[test]
-    fn it_parses_root_correctly() {
-        let shape_raw = klwp::item::tests::base_item(klwp::item::InternalType::ShapeModule);
-
-        let anchor = from_raw_item(&shape_raw, true);
-        assert!(matches!(anchor.h, AnchorType::Center));
-        assert!(matches!(anchor.v, AnchorType::Start));
     }
 }

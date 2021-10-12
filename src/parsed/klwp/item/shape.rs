@@ -8,14 +8,14 @@ use wasm_bindgen::prelude::*;
 #[derive(Serialize, Deserialize)]
 pub struct Shape {
     pub data: ShapeData,
-    pub paint: paint::Paint,
+    pub paint: Option<paint::Paint>,
     pub id: String,
     pub title: Option<String>,
     #[serde(rename(serialize = "isRoot"))]
     pub is_root: Option<bool>,
-    pub anchor: anchor::Anchor,
-    pub offset: offset::Offset,
-    pub padding: padding::Padding,
+    pub anchor: Option<anchor::Anchor>,
+    pub offset: Option<offset::Offset>,
+    pub padding: Option<padding::Padding>,
 }
 
 #[skip_serializing_none]
@@ -43,7 +43,7 @@ pub enum ShapeDataType {
     Squircle,
 }
 
-pub fn from_raw_klwp(shape_raw: &klwp::item::Item, id: &str, is_root: bool) -> Item {
+pub fn from_raw_klwp(shape_raw: &klwp::item::Item, id: &str, is_root: Option<bool>) -> Item {
     let data = ShapeData {
         r#type: match &shape_raw.shape_type {
             Some(v) => match v {
@@ -82,7 +82,7 @@ pub fn from_raw_klwp(shape_raw: &klwp::item::Item, id: &str, is_root: bool) -> I
     let paint = paint::from_raw_item(shape_raw);
 
     let title = shape_raw.internal_title.clone();
-    let anchor = anchor::from_raw_item(shape_raw, is_root);
+    let anchor = anchor::from_raw_item(shape_raw);
     let offset = offset::from_raw_item(shape_raw);
     let padding = padding::from_raw_item(shape_raw);
 
@@ -91,7 +91,7 @@ pub fn from_raw_klwp(shape_raw: &klwp::item::Item, id: &str, is_root: bool) -> I
         paint,
         id: id.to_owned(),
         title,
-        is_root: if is_root { Some(true) } else { None },
+        is_root,
         anchor,
         offset,
         padding,
@@ -181,13 +181,13 @@ export type ShapeData =
 export interface Shape {
     type: 'SHAPE',
     data: ShapeData,
-    paint: Paint,
     id: string,
-    title: string,
-    isRoot: boolean,
-    anchor: Anchor,
-    offset: Offset,
-    padding: Padding
+    paint?: Paint,
+    title?: string,
+    isRoot?: boolean,
+    anchor?: Anchor,
+    offset?: Offset,
+    padding?: Padding
 }"#;
 
 #[cfg(test)]
@@ -199,7 +199,7 @@ mod tests {
     fn it_parses_base_item_correctly() {
         let shape_raw = klwp::item::tests::base_item(klwp::item::InternalType::ShapeModule);
 
-        let item_parsed = from_raw_klwp(&shape_raw, "0", false);
+        let item_parsed = from_raw_klwp(&shape_raw, "0", None);
         match item_parsed {
             Item::Shape(v) => {
                 assert_eq!(v.id, "0");
@@ -224,7 +224,7 @@ mod tests {
         shape_raw.shape_angle = Some(30.0);
         shape_raw.shape_corners = Some(40.0);
 
-        let item_parsed = from_raw_klwp(&shape_raw, "0", false);
+        let item_parsed = from_raw_klwp(&shape_raw, "0", None);
         match item_parsed {
             Item::Shape(v) => {
                 assert!(matches!(v.data.r#type, ShapeDataType::Square));
@@ -247,7 +247,7 @@ mod tests {
         shape_raw.shape_angle = Some(30.0);
         shape_raw.shape_corners = Some(40.0);
 
-        let item_parsed = from_raw_klwp(&shape_raw, "0", false);
+        let item_parsed = from_raw_klwp(&shape_raw, "0", None);
         match item_parsed {
             Item::Shape(v) => {
                 assert!(matches!(v.data.r#type, ShapeDataType::Rectangle));
@@ -270,7 +270,7 @@ mod tests {
         shape_raw.shape_angle = Some(30.0);
         shape_raw.shape_corners = Some(40.0);
 
-        let item_parsed = from_raw_klwp(&shape_raw, "0", false);
+        let item_parsed = from_raw_klwp(&shape_raw, "0", None);
         match item_parsed {
             Item::Shape(v) => {
                 assert!(matches!(v.data.r#type, ShapeDataType::Circle));
@@ -292,7 +292,7 @@ mod tests {
         shape_raw.shape_angle = Some(30.0);
         shape_raw.shape_corners = Some(40.0);
 
-        let item_parsed = from_raw_klwp(&shape_raw, "0", false);
+        let item_parsed = from_raw_klwp(&shape_raw, "0", None);
         match item_parsed {
             Item::Shape(v) => {
                 assert!(matches!(v.data.r#type, ShapeDataType::Oval));
@@ -314,7 +314,7 @@ mod tests {
         shape_raw.shape_angle = Some(30.0);
         shape_raw.shape_corners = Some(40.0);
 
-        let item_parsed = from_raw_klwp(&shape_raw, "0", false);
+        let item_parsed = from_raw_klwp(&shape_raw, "0", None);
         match item_parsed {
             Item::Shape(v) => {
                 assert!(matches!(v.data.r#type, ShapeDataType::Triangle));
@@ -336,7 +336,7 @@ mod tests {
         shape_raw.shape_angle = Some(30.0);
         shape_raw.shape_corners = Some(40.0);
 
-        let item_parsed = from_raw_klwp(&shape_raw, "0", false);
+        let item_parsed = from_raw_klwp(&shape_raw, "0", None);
         match item_parsed {
             Item::Shape(v) => {
                 assert!(matches!(v.data.r#type, ShapeDataType::RightTriangle));
@@ -358,7 +358,7 @@ mod tests {
         shape_raw.shape_angle = Some(30.0);
         shape_raw.shape_corners = Some(40.0);
 
-        let item_parsed = from_raw_klwp(&shape_raw, "0", false);
+        let item_parsed = from_raw_klwp(&shape_raw, "0", None);
         match item_parsed {
             Item::Shape(v) => {
                 assert!(matches!(v.data.r#type, ShapeDataType::Hexagon));
@@ -380,7 +380,7 @@ mod tests {
         shape_raw.shape_angle = Some(30.0);
         shape_raw.shape_corners = Some(40.0);
 
-        let item_parsed = from_raw_klwp(&shape_raw, "0", false);
+        let item_parsed = from_raw_klwp(&shape_raw, "0", None);
         match item_parsed {
             Item::Shape(v) => {
                 assert!(matches!(v.data.r#type, ShapeDataType::Slice));
@@ -402,7 +402,7 @@ mod tests {
         shape_raw.shape_angle = Some(30.0);
         shape_raw.shape_corners = Some(40.0);
 
-        let item_parsed = from_raw_klwp(&shape_raw, "0", false);
+        let item_parsed = from_raw_klwp(&shape_raw, "0", None);
         match item_parsed {
             Item::Shape(v) => {
                 assert!(matches!(v.data.r#type, ShapeDataType::Arc));
@@ -424,7 +424,7 @@ mod tests {
         shape_raw.shape_angle = Some(30.0);
         shape_raw.shape_corners = Some(40.0);
 
-        let item_parsed = from_raw_klwp(&shape_raw, "0", false);
+        let item_parsed = from_raw_klwp(&shape_raw, "0", None);
         match item_parsed {
             Item::Shape(v) => {
                 assert!(matches!(v.data.r#type, ShapeDataType::Squircle));

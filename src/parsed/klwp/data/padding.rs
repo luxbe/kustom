@@ -11,13 +11,20 @@ pub struct Padding {
     left: f32,
 }
 
-pub fn from_raw_item(item_raw: &klwp::item::Item) -> Padding {
-    Padding {
+pub fn from_raw_item(item_raw: &klwp::item::Item) -> Option<Padding> {
+    if item_raw.position_padding_top.is_none()
+        && item_raw.position_padding_right.is_none()
+        && item_raw.position_padding_bottom.is_none()
+        && item_raw.position_padding_left.is_none()
+    {
+        return None;
+    }
+    Some(Padding {
         top: item_raw.position_padding_top.unwrap_or(0.0),
         right: item_raw.position_padding_right.unwrap_or(0.0),
         bottom: item_raw.position_padding_bottom.unwrap_or(0.0),
         left: item_raw.position_padding_left.unwrap_or(0.0),
-    }
+    })
 }
 
 #[wasm_bindgen(typescript_custom_section)]
@@ -37,10 +44,7 @@ mod tests {
         let shape_raw = klwp::item::tests::base_item(klwp::item::InternalType::ShapeModule);
 
         let padding = from_raw_item(&shape_raw);
-        assert_eq!(padding.top, 0.0);
-        assert_eq!(padding.right, 0.0);
-        assert_eq!(padding.bottom, 0.0);
-        assert_eq!(padding.left, 0.0);
+        assert!(padding.is_none());
     }
 
     #[test]
@@ -52,10 +56,64 @@ mod tests {
         shape_raw.position_padding_bottom = Some(30.0);
         shape_raw.position_padding_left = Some(40.0);
 
-        let padding = from_raw_item(&shape_raw);
+        let padding_raw = from_raw_item(&shape_raw);
+        assert!(padding_raw.is_some());
+        let padding = padding_raw.unwrap();
         assert_eq!(padding.top, 10.0);
         assert_eq!(padding.right, 20.0);
         assert_eq!(padding.bottom, 30.0);
         assert_eq!(padding.left, 40.0);
+
+        shape_raw.position_padding_top = Some(20.0);
+        shape_raw.position_padding_right = None;
+        shape_raw.position_padding_bottom = None;
+        shape_raw.position_padding_left = None;
+
+        let padding_raw = from_raw_item(&shape_raw);
+        assert!(padding_raw.is_some());
+        let padding = padding_raw.unwrap();
+        assert_eq!(padding.top, 20.0);
+        assert_eq!(padding.right, 0.0);
+        assert_eq!(padding.bottom, 0.0);
+        assert_eq!(padding.left, 0.0);
+
+        shape_raw.position_padding_top = None;
+        shape_raw.position_padding_right = Some(20.0);
+        shape_raw.position_padding_bottom = None;
+        shape_raw.position_padding_left = None;
+
+        let padding_raw = from_raw_item(&shape_raw);
+        assert!(padding_raw.is_some());
+        let padding = padding_raw.unwrap();
+        assert_eq!(padding.top, 0.0);
+        assert_eq!(padding.right, 20.0);
+        assert_eq!(padding.bottom, 0.0);
+        assert_eq!(padding.left, 0.0);
+
+        shape_raw.position_padding_top = None;
+        shape_raw.position_padding_right = None;
+        shape_raw.position_padding_bottom = Some(20.0);
+        shape_raw.position_padding_left = None;
+
+        let padding_raw = from_raw_item(&shape_raw);
+        assert!(padding_raw.is_some());
+        let padding = padding_raw.unwrap();
+        assert_eq!(padding.top, 0.0);
+        assert_eq!(padding.right, 0.0);
+        assert_eq!(padding.bottom, 20.0);
+        assert_eq!(padding.left, 0.0);
+
+        shape_raw.position_padding_top = None;
+        shape_raw.position_padding_right = None;
+        shape_raw.position_padding_bottom = None;
+        shape_raw.position_padding_left = Some(20.0);
+
+        let padding_raw = from_raw_item(&shape_raw);
+        assert!(padding_raw.is_some());
+        let padding = padding_raw.unwrap();
+        assert_eq!(padding.top, 0.0);
+        assert_eq!(padding.right, 0.0);
+        assert_eq!(padding.bottom, 0.0);
+        assert_eq!(padding.left, 20.0);
     }
 }

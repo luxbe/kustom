@@ -8,14 +8,14 @@ use wasm_bindgen::prelude::*;
 #[derive(Serialize, Deserialize)]
 pub struct Text {
     pub data: TextData,
-    pub paint: paint::Paint,
+    pub paint: Option<paint::Paint>,
     pub id: String,
     pub title: Option<String>,
     #[serde(rename(serialize = "isRoot"))]
     pub is_root: Option<bool>,
-    pub anchor: anchor::Anchor,
-    pub offset: offset::Offset,
-    pub padding: padding::Padding,
+    pub anchor: Option<anchor::Anchor>,
+    pub offset: Option<offset::Offset>,
+    pub padding: Option<padding::Padding>,
 }
 
 #[skip_serializing_none]
@@ -38,7 +38,7 @@ pub enum TextDataType {
     FitToBox,
 }
 
-pub fn from_raw_klwp(text_raw: &klwp::item::Item, id: &str, is_root: bool) -> Item {
+pub fn from_raw_klwp(text_raw: &klwp::item::Item, id: &str, is_root: Option<bool>) -> Item {
     let data = TextData {
         r#type: match &text_raw.text_size_type {
             Some(v) => match v {
@@ -76,7 +76,7 @@ pub fn from_raw_klwp(text_raw: &klwp::item::Item, id: &str, is_root: bool) -> It
     let paint = paint::from_raw_item(text_raw);
 
     let title = text_raw.internal_title.clone();
-    let anchor = anchor::from_raw_item(text_raw, is_root);
+    let anchor = anchor::from_raw_item(text_raw);
     let offset = offset::from_raw_item(text_raw);
     let padding = padding::from_raw_item(text_raw);
 
@@ -85,7 +85,7 @@ pub fn from_raw_klwp(text_raw: &klwp::item::Item, id: &str, is_root: bool) -> It
         paint,
         id: id.to_owned(),
         title,
-        is_root: if is_root { Some(true) } else { None },
+        is_root,
         anchor,
         offset,
         padding,
@@ -136,13 +136,13 @@ export type TextData =
 export interface Text {
     data: TextData,
     type: 'TEXT'
-    paint: Paint,
     id: string,
-    title: string,
-    isRoot: boolean,
-    anchor: Anchor,
-    offset: Offset,
-    padding: Padding
+    paint?: Paint,
+    title?: string,
+    isRoot?: boolean,
+    anchor?: Anchor,
+    offset?: Offset,
+    padding?: Padding
 }"#;
 
 #[cfg(test)]
@@ -153,7 +153,7 @@ mod tests {
     fn it_parses_correctly() {
         let text_raw = klwp::item::tests::base_item(klwp::item::InternalType::TextModule);
 
-        let item_parsed = from_raw_klwp(&text_raw, "0", false);
+        let item_parsed = from_raw_klwp(&text_raw, "0", None);
         match item_parsed {
             Item::Text(v) => {
                 assert_eq!(v.id, "0");
@@ -169,7 +169,7 @@ mod tests {
         let mut text_raw = klwp::item::tests::base_item(klwp::item::InternalType::TextModule);
         text_raw.internal_title = Some("TITLE".to_owned());
 
-        let item_parsed = from_raw_klwp(&text_raw, "0", true);
+        let item_parsed = from_raw_klwp(&text_raw, "0", Some(true));
         match item_parsed {
             Item::Text(v) => {
                 assert_eq!(v.id, "0");
@@ -194,7 +194,7 @@ mod tests {
         text_raw.text_width = Some(20.0);
         text_raw.text_height = Some(30.0);
 
-        let item_parsed = from_raw_klwp(&text_raw, "0", true);
+        let item_parsed = from_raw_klwp(&text_raw, "0", Some(true));
         match item_parsed {
             Item::Text(v) => {
                 assert!(matches!(v.data.r#type, TextDataType::FixedFontHeight));
@@ -218,7 +218,7 @@ mod tests {
         text_raw.text_width = Some(20.0);
         text_raw.text_height = Some(30.0);
 
-        let item_parsed = from_raw_klwp(&text_raw, "0", true);
+        let item_parsed = from_raw_klwp(&text_raw, "0", Some(true));
         match item_parsed {
             Item::Text(v) => {
                 assert!(matches!(v.data.r#type, TextDataType::FixedWidth));
@@ -242,7 +242,7 @@ mod tests {
         text_raw.text_width = Some(20.0);
         text_raw.text_height = Some(30.0);
 
-        let item_parsed = from_raw_klwp(&text_raw, "0", true);
+        let item_parsed = from_raw_klwp(&text_raw, "0", Some(true));
         match item_parsed {
             Item::Text(v) => {
                 assert!(matches!(v.data.r#type, TextDataType::FitWidth));
@@ -266,7 +266,7 @@ mod tests {
         text_raw.text_width = Some(20.0);
         text_raw.text_height = Some(30.0);
 
-        let item_parsed = from_raw_klwp(&text_raw, "0", true);
+        let item_parsed = from_raw_klwp(&text_raw, "0", Some(true));
         match item_parsed {
             Item::Text(v) => {
                 assert!(matches!(v.data.r#type, TextDataType::FitToBox));

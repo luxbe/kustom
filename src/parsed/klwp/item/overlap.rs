@@ -14,19 +14,19 @@ pub struct Overlap {
     pub title: Option<String>,
     #[serde(rename(serialize = "isRoot"))]
     pub is_root: Option<bool>,
-    pub anchor: anchor::Anchor,
-    pub offset: offset::Offset,
-    pub padding: padding::Padding,
+    pub anchor: Option<anchor::Anchor>,
+    pub offset: Option<offset::Offset>,
+    pub padding: Option<padding::Padding>,
 }
 
 pub fn from_raw_klwp(
     overlap_raw: &klwp::item::Item,
     id: &str,
     data: &mut HashMap<String, super::Item>,
-    is_root: bool,
+    is_root: Option<bool>,
 ) -> Item {
     let title = overlap_raw.internal_title.clone();
-    let anchor = anchor::from_raw_item(overlap_raw, is_root);
+    let anchor = anchor::from_raw_item(overlap_raw);
     let offset = offset::from_raw_item(overlap_raw);
     let padding = padding::from_raw_item(overlap_raw);
 
@@ -35,7 +35,7 @@ pub fn from_raw_klwp(
             let mut res = Vec::with_capacity(items_raw.len());
             for (i, item_raw) in items_raw.into_iter().enumerate() {
                 let id = id.to_string() + "-" + &i.to_string();
-                let item = super::from_raw_klwp(&item_raw, &id, data, false);
+                let item = super::from_raw_klwp(&item_raw, &id, data, None);
                 res.push(id.clone());
 
                 data.insert(id, item);
@@ -50,7 +50,7 @@ pub fn from_raw_klwp(
         items,
         id: id.to_owned(),
         title,
-        is_root: if is_root { Some(true) } else { None },
+        is_root,
         anchor,
         offset,
         padding,
@@ -63,11 +63,11 @@ const TS_APPEND_CONTENT: &'static str = r#"export interface Overlap {
     items: string[],
     
     id: string,
-    title: string,
-    isRoot: boolean,
-    anchor: Anchor,
-    offset: Offset,
-    padding: Padding
+    title?: string,
+    isRoot?: boolean,
+    anchor?: Anchor,
+    offset?: Offset,
+    padding?: Padding
 }"#;
 
 #[cfg(test)]
@@ -81,7 +81,7 @@ mod tests {
         let overlap_raw =
             klwp::item::tests::base_item(klwp::item::InternalType::OverlapLayerModule);
 
-        let item_parsed = from_raw_klwp(&overlap_raw, "0", &mut data, false);
+        let item_parsed = from_raw_klwp(&overlap_raw, "0", &mut data, None);
         match item_parsed {
             Item::Overlap(v) => {
                 assert_eq!(v.id, "0");
@@ -104,7 +104,7 @@ mod tests {
         overlap_raw.viewgroup_items = Some(vec![item_raw_1, item_raw_2]);
         overlap_raw.internal_title = Some("TITLE".to_owned());
 
-        let item_parsed = from_raw_klwp(&overlap_raw, "0", &mut data, true);
+        let item_parsed = from_raw_klwp(&overlap_raw, "0", &mut data, Some(true));
         match item_parsed {
             Item::Overlap(v) => {
                 assert_eq!(v.id, "0");
