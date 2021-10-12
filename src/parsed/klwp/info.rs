@@ -13,6 +13,7 @@ pub struct Info {
     pub height: u32,
 
     // unused for now
+    version: u8,
     features: String,
     release: u32,
     locked: bool,
@@ -26,6 +27,7 @@ pub fn from_raw_klwp(info_raw: klwp::info::Info) -> Info {
     let email = info_raw.email;
     let width = info_raw.width;
     let height = info_raw.height;
+    let version = info_raw.version;
     let features = info_raw.features;
     let release = info_raw.release;
     let locked = info_raw.locked;
@@ -39,6 +41,7 @@ pub fn from_raw_klwp(info_raw: klwp::info::Info) -> Info {
         width,
         height,
 
+        version,
         features,
         release,
         locked,
@@ -55,6 +58,7 @@ const TS_APPEND_CONTENT: &'static str = r#"export interface Info {
     width: number,
     height: number,
     
+    version: number,
     features: string,
     release: number,
     locked: boolean,
