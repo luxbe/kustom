@@ -1,6 +1,6 @@
 [package]
 name = "kustom"
-version = "0.1.3"
+version = "0.1.4"
 description = "This project is designed to easily extract and work with klwp files"
 repository = "https://github.com/luxbe/kustom/"
 license = "MIT"
