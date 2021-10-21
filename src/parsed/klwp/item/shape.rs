@@ -100,7 +100,7 @@ pub fn from_raw_klwp(shape_raw: &klwp::item::Item, id: &str, is_root: Option<boo
 
 #[wasm_bindgen(typescript_custom_section)]
 const TS_APPEND_CONTENT: &'static str = r#"export type ShapeDataType =
-    | 'RECT'
+    | 'RECTANGLE'
     | 'SQUARE'
     | 'CIRCLE'
     | 'OVAL'
@@ -118,7 +118,7 @@ export interface BaseShapeData {
 }
 
 export interface ShapeDataRectangle extends BaseShapeData {
-    type: 'RECT';
+    type: 'RECTANGLE';
     height: number;
 }
 
