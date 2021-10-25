@@ -18,7 +18,7 @@ This project is designed to easily extract and work with klwp files
 
 ## Install
 
-```sh
+```bash
 npm install kustom
 ```
 
@@ -26,19 +26,19 @@ npm install kustom
 
 ### 🛠️ Build with `wasm-pack build`
 
-```
+```bash
 wasm-pack build --target web
 ```
 
 ### 🔬 Test with `cargo test`
 
-```
+```bash
 cargo test
 ```
 
 ### 🎁 Publish to NPM with `wasm-pack publish`
 
-```
+```bash
 wasm-pack publish
 ```
 
