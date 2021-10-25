@@ -11,6 +11,22 @@ pub struct Padding {
     left: f32,
 }
 
+pub fn from_raw_root(root_raw: &klwp::root::Root) -> Option<Padding> {
+    if root_raw.position_padding_top.is_none()
+        && root_raw.position_padding_right.is_none()
+        && root_raw.position_padding_bottom.is_none()
+        && root_raw.position_padding_left.is_none()
+    {
+        return None;
+    }
+    Some(Padding {
+        top: root_raw.position_padding_top.unwrap_or(0.0),
+        right: root_raw.position_padding_right.unwrap_or(0.0),
+        bottom: root_raw.position_padding_bottom.unwrap_or(0.0),
+        left: root_raw.position_padding_left.unwrap_or(0.0),
+    })
+}
+
 pub fn from_raw_item(item_raw: &klwp::item::Item) -> Option<Padding> {
     if item_raw.position_padding_top.is_none()
         && item_raw.position_padding_right.is_none()

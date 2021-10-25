@@ -39,14 +39,14 @@ pub struct Item {
     pub viewgroup_items: Option<Vec<Item>>,
 
     // only if the item is a root item
-    pub position_offset_y: Option<f32>,
     pub position_offset_x: Option<f32>,
+    pub position_offset_y: Option<f32>,
 
     // only if item is not a root item
-    pub position_padding_left: Option<f32>,
-    pub position_padding_right: Option<f32>,
     pub position_padding_top: Option<f32>,
+    pub position_padding_right: Option<f32>,
     pub position_padding_bottom: Option<f32>,
+    pub position_padding_left: Option<f32>,
 }
 
 #[derive(Serialize, Deserialize)]
