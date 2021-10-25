@@ -29,7 +29,7 @@ pub struct ShapeData {
 }
 
 #[derive(Serialize, Deserialize)]
-#[serde(rename = "SCREAMING_SNAKE_CASE")]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum ShapeDataType {
     Rectangle,
     Square,
