@@ -33,9 +33,9 @@ pub fn parse_klwp_file(buf: Vec<u8>) -> JsValue {
 #[wasm_bindgen(typescript_custom_section)]
 const TS_APPEND_CONTENT: &'static str = r#"/**
  * @param {Preset} preset - The KLWP Preset to export
- * @returns {Uint8Array}
+ * @returns Uint8Array
  */
-export function exportKLWPFile(preset: Preset): {Uint8Array};"#;
+export function exportKLWPFile(preset: Preset): Uint8Array;"#;
 #[wasm_bindgen(js_name = exportKLWPFile, skip_typescript)]
 pub fn export_klwp_file(preset_raw: JsValue) -> Vec<u8> {
     let preset = preset_raw.into_serde::<klwp::Preset>().unwrap();

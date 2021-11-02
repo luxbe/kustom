@@ -10,8 +10,8 @@ use base::{PositionAnchor, InternalType};
 use text::TextSizeType;
 use shape::ShapeType;
 
-#[derive(Serialize, Deserialize)]
 #[skip_serializing_none]
+#[derive(Serialize, Deserialize)]
 pub struct Item {
     pub internal_type: InternalType,
     pub internal_title: Option<String>,
